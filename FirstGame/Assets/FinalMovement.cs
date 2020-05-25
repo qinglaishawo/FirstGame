@@ -132,4 +132,16 @@ public class FinalMovement : MonoBehaviour
             }
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "forg")
+        {
+            if (anim.GetBool("falling"))
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                Destroy(collision.gameObject);
+            }
+        }
+    }
 }
