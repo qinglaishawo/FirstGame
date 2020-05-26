@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Collection
   - forg
+  - Enemy
   layers:
   - Default
   - TransparentFX
