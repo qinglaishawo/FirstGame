@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ForgControl : MonoBehaviour
+public class ForgControl : EnemyControl
 {
     private Rigidbody2D rb;
-    private Animator anim;
+    //private Animator anim;
 
     public Transform leftPositon;
     public Transform rightPosition;
     private float leftX;
     private float rightX;
-    private bool faceLeft=true;
-    private bool rest;
-    private float cumulativeTime;
+    private bool faceLeft = true;
+
     public float speed;
+    public float jumpForce;
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        //anim = GetComponent<Animator>();
         leftX = leftPositon.position.x;
         rightX = rightPosition.position.x;
-        rest = true;
     }
 
     // Update is called once per frame
@@ -33,11 +33,11 @@ public class ForgControl : MonoBehaviour
 
     void Movement()
     {
-        if (!rest)
+        if (anim.GetBool("fall") || anim.GetBool("jump"))
         {
             if (faceLeft)
             {
-                rb.velocity = new Vector2(-speed, rb.velocity.y);
+                rb.velocity = new Vector2(-speed, jumpForce);
                 if (transform.position.x < leftX)
                 {
                     transform.transform.localScale = new Vector3(-1, 1, 1);
@@ -46,7 +46,7 @@ public class ForgControl : MonoBehaviour
             }
             else
             {
-                rb.velocity = new Vector2(speed, rb.velocity.y);
+                rb.velocity = new Vector2(speed, jumpForce);
                 if (transform.position.x > rightX)
                 {
                     transform.transform.localScale = new Vector3(1, 1, 1);
@@ -56,26 +56,26 @@ public class ForgControl : MonoBehaviour
         }
     }
 
+    void Fall()
+    {
+        anim.SetBool("jump",false);
+        anim.SetBool("fall", true);
+        jumpForce = -jumpForce;
+    }
+
+    void idle()
+    {
+        anim.SetBool("jump", false);
+        anim.SetBool("fall", false);
+        jumpForce = -jumpForce;
+    }
+
+    void jump()
+    {
+        anim.SetBool("jump", true);
+    }
     private void FixedUpdate()
     {
-        cumulativeTime = cumulativeTime + Time.deltaTime;
-        if (rest)
-        {
-            if (cumulativeTime >=1)
-            {
-                cumulativeTime = 0;
-                rest = false;
-                anim.SetBool("idle",false);
-            }
-        }
-        else
-        {
-            if (cumulativeTime >= 0.25f)
-            {
-                cumulativeTime = 0;
-                rest = true;
-                anim.SetBool("idle", true);
-            }
-        }
+
     }
 }

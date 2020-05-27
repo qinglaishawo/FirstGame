@@ -106,7 +106,7 @@ public class FinalMovement : MonoBehaviour
                 anim.SetBool("falling", true);
             }
         }
-         if (anim.GetBool("falling"))
+        if (anim.GetBool("falling"))
         {
             if (isGround)
             {
@@ -154,12 +154,14 @@ public class FinalMovement : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy")
         {
-            if (anim.GetBool("falling"))
+            EnemyControl ec = collision.gameObject.GetComponent<EnemyControl>();
+            if (rb.velocity.y<0)
             {            
                 anim.SetBool("jumping", true);
                 anim.SetBool("falling", false);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                Destroy(collision.gameObject);
+                //Destroy(collision.gameObject);
+                ec.JumpOn();              
             }
             else if (transform.position.x < collision.transform.position.x)
             {
