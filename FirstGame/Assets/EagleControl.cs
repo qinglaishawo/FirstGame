@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EagleControl : EnemyControl
 {
-    private Rigidbody2D rb;
+    //private Rigidbody2D rb;
     //private Animator anim;
 
     public Transform upPositon;
@@ -20,7 +20,7 @@ public class EagleControl : EnemyControl
         base.Start();
         upY = upPositon.position.y;
         downY = downPosition.position.y;
-        rb = GetComponent<Rigidbody2D>();
+        //rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame

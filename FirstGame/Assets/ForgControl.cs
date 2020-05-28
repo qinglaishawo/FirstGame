@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ForgControl : EnemyControl
 {
-    private Rigidbody2D rb;
+    //private Rigidbody2D rb;
     //private Animator anim;
 
     public Transform leftPositon;
@@ -19,7 +19,7 @@ public class ForgControl : EnemyControl
     protected override void Start()
     {
         base.Start();
-        rb = GetComponent<Rigidbody2D>();
+       //rb = GetComponent<Rigidbody2D>();
         //anim = GetComponent<Animator>();
         leftX = leftPositon.position.x;
         rightX = rightPosition.position.x;

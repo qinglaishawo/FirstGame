@@ -23,6 +23,8 @@ public class FinalMovement : MonoBehaviour
     public int gemCount;
     private string preCollectionName;
     private bool isHurt;
+
+    public AudioSource jumpAudio, hitAudio, cherryAudio, gemAudio;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,10 +36,12 @@ public class FinalMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (Input.GetButtonDown("Jump") && jumpCount > 0)
+        if (!isHurt)
         {
-            jumpPressed = true;
+            if (Input.GetButtonDown("Jump") && jumpCount > 0)
+            {
+                jumpPressed = true;
+            }
         }
     }
 
@@ -48,8 +52,10 @@ public class FinalMovement : MonoBehaviour
         {
             GroundMovement();
         }
+
         Jump();
         SwitchAnim();
+        
     }
 
     void GroundMovement()
@@ -77,12 +83,14 @@ public class FinalMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpCount--;
             jumpPressed = false;
+            jumpAudio.Play();
         }
         else if (jumpPressed && jumpCount > 0 && isJump)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             jumpCount--;
             jumpPressed = false;
+            jumpAudio.Play();
         }
         if (!isGround)
         {
@@ -93,12 +101,13 @@ public class FinalMovement : MonoBehaviour
 
     void SwitchAnim()
     {
-        if (isJump)
+        if (isJump && !isHurt)
         {
+           
             anim.SetBool("jumping", true);
             anim.SetBool("falling", false);
         }
-        if (anim.GetBool("jumping"))
+        if (anim.GetBool("jumping") && !isHurt)
         {
             if (rb.velocity.y < 0)
             {
@@ -106,7 +115,7 @@ public class FinalMovement : MonoBehaviour
                 anim.SetBool("falling", true);
             }
         }
-        if (anim.GetBool("falling"))
+        if (anim.GetBool("falling") && !isHurt)
         {
             if (isGround)
             {
@@ -116,15 +125,18 @@ public class FinalMovement : MonoBehaviour
         }
         else if (isHurt)
         {
-            
+            print("213123123");
             anim.SetBool("hurting", true);
-            if (Mathf.Abs(rb.velocity.x) < 0.1f)
+            anim.SetBool("jumping", false);
+            anim.SetBool("falling", false);
+            /*if (Mathf.Abs(rb.velocity.x) < 0.1f)
             {
                 isHurt = false;
                 anim.SetBool("hurting", false);
                 anim.SetBool("idle", true);
                 anim.SetFloat("running", 0);
-            }
+                GetComponent<CircleCollider2D>().sharedMaterial.friction = 0.02f;
+            }*/
         }
     }
 
@@ -138,11 +150,13 @@ public class FinalMovement : MonoBehaviour
                 {
                     cherryCount++;
                     cherryText.text = cherryCount.ToString();
+                    cherryAudio.Play();
                 }
                 if (collision.name.Contains("gem"))
                 {
                     gemCount++;
                     gemText.text = gemCount.ToString();
+                    gemAudio.Play();
                 }
                 preCollectionName = collision.name;
                 Destroy(collision.gameObject);
@@ -155,24 +169,43 @@ public class FinalMovement : MonoBehaviour
         if (collision.gameObject.tag == "Enemy")
         {
             EnemyControl ec = collision.gameObject.GetComponent<EnemyControl>();
-            if (rb.velocity.y<0)
+            //print("transform.position="+ transform.position.x);
+            //print("collision.position=" + collision.transform.position.x);
+            if (rb.velocity.y<0&&groundCheck.position.y> collision.transform.position.y)
             {            
                 anim.SetBool("jumping", true);
                 anim.SetBool("falling", false);
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 //Destroy(collision.gameObject);
+                //jumpAudio.Play();
                 ec.JumpOn();              
             }
-            else if (transform.position.x < collision.transform.position.x)
+            else if (transform.position.x <=collision.transform.position.x)
             {
+                hitAudio.Play();
+                //GetComponent<CircleCollider2D>().sharedMaterial.friction = 10f;
                 isHurt = true;
-                rb.velocity = new Vector2(-5f, rb.velocity.y);
+                rb.velocity = new Vector2(-5f, 0);
+                print("1111111111111");
             }
             else if (transform.position.x > collision.transform.position.x)
             {
+                hitAudio.Play();
+                //GetComponent<CircleCollider2D>().sharedMaterial.friction = 10f;
                 isHurt = true;
-                rb.velocity = new Vector2(5f, rb.velocity.y);
+                rb.velocity = new Vector2(5f, 0);
+                print("2222222222222");
             }
         }
+    }
+
+    void stopHurt()
+    {
+        isHurt = false;
+        anim.SetBool("hurting", false);
+        anim.SetBool("idle", true);
+        anim.SetFloat("running", 0);
+        GetComponent<CircleCollider2D>().sharedMaterial.friction = 0.02f;
+        rb.velocity = new Vector2(0,0);
     }
 }
