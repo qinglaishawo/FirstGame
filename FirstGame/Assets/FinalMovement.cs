@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class FinalMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
@@ -10,6 +11,7 @@ public class FinalMovement : MonoBehaviour
 
     public float speed, jumpForce;
     public Transform groundCheck;
+    public Transform topCheck;
     public LayerMask ground;
 
     public bool isGround, isJump;
@@ -25,6 +27,9 @@ public class FinalMovement : MonoBehaviour
     private bool isHurt;
 
     public AudioSource jumpAudio, hitAudio, cherryAudio, gemAudio;
+    public GameObject dialog1;
+    private bool isCrouch;
+    public Collider2D topBox;
     // Start is called before the first frame update
     void Start()
     {
@@ -42,7 +47,10 @@ public class FinalMovement : MonoBehaviour
             {
                 jumpPressed = true;
             }
+            Crouch();
         }
+
+
     }
 
     private void FixedUpdate()
@@ -51,8 +59,8 @@ public class FinalMovement : MonoBehaviour
         if (!isHurt)
         {
             GroundMovement();
+            
         }
-
         Jump();
         SwitchAnim();
         
@@ -74,7 +82,7 @@ public class FinalMovement : MonoBehaviour
     {
         if (isGround)
         {
-            jumpCount = 2;
+            jumpCount = 1;
             isJump = false;
         }
         if (jumpPressed && isGround)
@@ -162,6 +170,19 @@ public class FinalMovement : MonoBehaviour
                 Destroy(collision.gameObject);
             }
         }
+        if(collision.tag == "LevelCollider")
+        {
+            dialog1.SetActive(true);
+        }
+        if (collision.tag == "restart")
+        {
+            Invoke("Restart",1f);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        dialog1.SetActive(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -186,7 +207,7 @@ public class FinalMovement : MonoBehaviour
                 //GetComponent<CircleCollider2D>().sharedMaterial.friction = 10f;
                 isHurt = true;
                 rb.velocity = new Vector2(-5f, 0);
-                print("1111111111111");
+                //print("1111111111111");
             }
             else if (transform.position.x > collision.transform.position.x)
             {
@@ -194,7 +215,7 @@ public class FinalMovement : MonoBehaviour
                 //GetComponent<CircleCollider2D>().sharedMaterial.friction = 10f;
                 isHurt = true;
                 rb.velocity = new Vector2(5f, 0);
-                print("2222222222222");
+                //print("2222222222222");
             }
         }
     }
@@ -207,5 +228,27 @@ public class FinalMovement : MonoBehaviour
         anim.SetFloat("running", 0);
         GetComponent<CircleCollider2D>().sharedMaterial.friction = 0.02f;
         rb.velocity = new Vector2(0,0);
+    }
+
+    void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void Crouch()
+    {
+        if (!Physics2D.OverlapCircle(topCheck.position, 0.1f, ground))
+        {
+            if (Input.GetButton("Crouch"))
+            {
+                anim.SetBool("Crouching",true);
+                topBox.enabled = false;
+            }
+            else
+            {
+                anim.SetBool("Crouching", false);
+                topBox.enabled = true;
+            }
+        }
     }
 }

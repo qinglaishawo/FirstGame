@@ -7,6 +7,8 @@ TagManager:
   - Collection
   - forg
   - Enemy
+  - LevelCollider
+  - restart
   layers:
   - Default
   - TransparentFX
@@ -52,4 +54,7 @@ TagManager:
     locked: 0
   - name: Frontground
     uniqueID: 360511725
+    locked: 0
+  - name: chao
+    uniqueID: 3621875813
     locked: 0
